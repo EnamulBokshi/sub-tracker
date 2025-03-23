@@ -47,7 +47,36 @@ export const register = async (req, res, next )=>{
 
 }
 export const login = async (req, res, next) =>{
-    res.send({title: "Login", message: "Login a user"})
+    try {
+        const {email, password} = req.body;
+
+        const user = await User.findOne({email});
+        console.log(user)
+        if(!user){
+            const error = new Error('Invalid credentials');
+            error.statusCode = 401;
+            throw error;
+        }
+        const isValidPassword = await bcrypt.compare(password,user.password);
+        if(!isValidPassword){
+            const error = new Error('Invalid credentials');
+            error.statusCode = 401;
+            throw error;
+        }
+
+        const token = jwt.sign({userId: user._id},JWT_SECRET, {expiresIn: JWT_EXPIRES_IN});
+        res.status(200).json({
+            success: true,
+            message: 'User logged in successfully',
+            data:{
+                user,
+                token
+            }
+        })
+    } catch (error) {
+        next(error)
+
+    }
 
 }
 export const logout = async (req, res, next) => {
