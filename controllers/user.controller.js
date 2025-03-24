@@ -1,15 +1,13 @@
 import User from "../models/user.model.js";
-import { authorize } from "../middlewares/auth.middleware.js";
+import aj from "../config/arcjet.js";
+import {isSpoofedBot} from "@arcjet/inspect"
+
 export const getUsers = async (req, res, next) => {
     
     try {
 
-        const users = await User.find().select('-password');
-        res.status(200).json({
-            success: true,
-            data: users
-        })
-        co
+        
+    
 
         const decision = await aj.protect(req, { requested: 5 }); // Deduct 5 tokens from the bucket
         
@@ -56,7 +54,11 @@ export const getUsers = async (req, res, next) => {
         
             res.writeHead(200, { "Content-Type": "application/json" });
         
-            res.end(JSON.stringify({ message: "Hello World" }));
+            const users = await User.find().select('-password');
+            res.status(200).json({
+                success: true,
+                data: users
+        })
         
           }
 
