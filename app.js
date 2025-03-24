@@ -12,8 +12,6 @@ import arcjet,{sheild, detectBot, tokenBucket} from "@arcjet/node";
 import {isSpoofedBot} from "@arcjet/inspect"
 
 
-
-
 const app = express();
 
 const aj = arcjet({
