@@ -1,18 +1,45 @@
 
 import cookieParser from "cookie-parser";
 import express from "express";
-import {PORT} from './config/env.js';
+import {PORT,ARCJET_KEY} from './config/env.js';
 
 import authRouter from "./routes/auth.routes.js";
 import userRouter from "./routes/user.routes.js";
 import subscriptionRouter from "./routes/subscription.routes.js";
 import connectToDatabase from "./database/mongodb.js";
 import errorMiddleware from "./middlewares/error.middleware.js";
+import arcjet,{sheild, detectBot, tokenBucket} from "@arcjet/node";
+import {isSpoofedBot} from "@arcjet/inspect"
 
 
 
 
 const app = express();
+
+const aj = arcjet({
+    key:ARCJET_KEY,
+    characteristics:["ip","user-agent"],
+    rules: [
+        sheild({mode:"LIVE"}),
+        detectBot({
+            mode:"LIVE",
+            allow:[
+                "CATEGORY:SEARCH_ENGINE",
+                "CATEGORY:MONITORING",
+                "CATEGORY:VALIDATOR",
+                "CATEGORY:ANALYTICS",
+                "CATEGORY:SEO"
+                
+            ]
+        }),
+        tokenBucket({
+            mode: "LIVE",
+            refillRate:5,
+            interval:10,
+            capacity:10,
+        })
+    ]
+})
 
 
 app.use(express.json());
