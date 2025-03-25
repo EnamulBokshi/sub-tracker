@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createSubscription } from "../controllers/subscription.controller.js";
+import { createSubscription, getUserSubscriptions } from "../controllers/subscription.controller.js";
 import { authorize } from "../middlewares/auth.middleware.js";
 const subscriptionRouter = Router();
 
@@ -7,7 +7,7 @@ const subscriptionRouter = Router();
 subscriptionRouter.get('/',(req,res)=>res.send({title: "Subscription", message:"Get all subscriptions"}));
 
 // Add a GET route to get a subscription by ID
-subscriptionRouter.get('/:id',(req,res)=> res.send({title: "Subscription", message:"Get a subscription by ID", id: req.params.id}));
+subscriptionRouter.get('/:id',authorize,(req,res)=>res.send({title: "Subscription", message:"Get a subscription by ID"}));
 
 // Add a POST route to create a new subscription
 subscriptionRouter.post('/',authorize, createSubscription);
@@ -19,7 +19,7 @@ subscriptionRouter.put('/:id',(req,res)=>res.send({title: "Subscription", messag
 subscriptionRouter.delete('/:id',(req,res)=>res.send({title: "Subscription", message:"Delete a subscription by ID"}));
 
 // Add a GET route to get all subscriptions by user ID
-subscriptionRouter.get('/user/:id',(req,res)=>res.send({title: "Subscription", message:"Get all subscriptions by user ID"}));
+subscriptionRouter.get('/user/:id',authorize,getUserSubscriptions);
 
 
 //Add a PUT route to cancle a subscription by ID
